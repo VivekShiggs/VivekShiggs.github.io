@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HIGGS 3.0 — AI Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0300;
+  --dark:#140600;
+  --card:#1c0800;
+  --orange:#ff4500;
+  --orange2:#ff6a1a;
+  --amber:#ff9500;
+  --red:#cc2200;
+  --text:#fdf0e8;
+  --muted:#7a5040;
+  --border:rgba(255,70,0,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+
+/* ── CURSOR ── */
+.cursor{width:10px;height:10px;background:var(--orange);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.15s;}
+.cursor-ring{width:32px;height:32px;border:1.5px solid var(--orange);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:0.6;transition:width 0.3s,height 0.3s;}
+
+/* ── GRAIN ── */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.5;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;}
+nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,3,0,0.97) 60%,transparent);pointer-events:none;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.12em;color:var(--text);text-decoration:none;position:relative;z-index:1;display:flex;align-items:center;gap:6px;}
+.logo-badge{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;font-size:0.55rem;padding:2px 6px;border-radius:2px;letter-spacing:0.12em;font-family:'Barlow',sans-serif;font-weight:700;align-self:flex-start;margin-top:2px;}
+.nav-links{display:flex;gap:28px;list-style:none;position:relative;z-index:1;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--orange);}
+.nav-pill{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;padding:9px 20px;border-radius:2px;font-size:0.72rem;font-weight:700;text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;position:relative;z-index:1;box-shadow:0 4px 20px rgba(255,70,0,0.4);transition:all 0.2s;}
+.nav-pill:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,70,0,0.5);}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+#hero{min-height:100vh;display:grid;grid-template-columns:55% 45%;position:relative;overflow:hidden;}
+
+/* Gradient mesh background */
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(255,69,0,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 30% 80%, rgba(200,30,0,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 85% 10%, rgba(255,150,0,0.1) 0%, transparent 50%),
+    linear-gradient(160deg, #1c0800 0%, #0a0300 50%, #120500 100%);
+  z-index:0;
+}
+
+.hero-left{
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 5vw 9vh;position:relative;z-index:2;
+}
+.hero-eyebrow{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orange);margin-bottom:20px;display:flex;align-items:center;gap:10px;animation:fadeUp 0.6s ease both;}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:linear-gradient(90deg,var(--orange),var(--amber));}
+
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,9.5vw,11rem);line-height:0.9;letter-spacing:0.01em;animation:fadeUp 0.6s 0.1s ease both;position:relative;}
+h1 .outline{
+  -webkit-text-stroke:2px var(--orange);color:transparent;
+  filter:drop-shadow(0 0 20px rgba(255,69,0,0.4));
+}
+h1 .glow{
+  color:var(--orange);
+  text-shadow:0 0 40px rgba(255,69,0,0.6),0 0 80px rgba(255,100,0,0.3);
+}
+h1 .white{color:var(--text);}
+
+.hero-sub{margin-top:24px;max-width:430px;font-size:1rem;line-height:1.75;color:var(--muted);animation:fadeUp 0.6s 0.2s ease both;}
+.hero-sub strong{color:var(--text);font-weight:500;}
+
+.hero-actions{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap;animation:fadeUp 0.6s 0.3s ease both;}
+.btn-fire{
+  background:linear-gradient(135deg,var(--orange) 0%,var(--amber) 100%);
+  color:#fff;padding:14px 30px;border-radius:2px;font-size:0.78rem;font-weight:700;
+  text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;
+  box-shadow:0 6px 24px rgba(255,70,0,0.45),inset 0 1px 0 rgba(255,255,255,0.15);
+  transition:all 0.25s;position:relative;overflow:hidden;
+}
+.btn-fire::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);pointer-events:none;}
+.btn-fire:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 36px rgba(255,70,0,0.6);}
+.btn-outline{background:transparent;color:var(--text);padding:14px 30px;border-radius:2px;border:1px solid rgba(255,255,255,0.12);font-size:0.78rem;font-weight:500;text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s;backdrop-filter:blur(4px);}
+.btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+
+.hero-stats{display:flex;gap:40px;margin-top:52px;padding-top:30px;border-top:1px solid var(--border);animation:fadeUp 0.6s 0.4s ease both;}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1;background:linear-gradient(135deg,var(--orange),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-l{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+
+/* Hero right — 3D floating card panel */
+.hero-right{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:120px 4vw 60px;gap:16px;
+}
+
+/* 3D floating cards */
+.float-card{
+  width:100%;max-width:340px;
+  border-radius:16px;padding:28px 24px;
+  position:relative;overflow:hidden;
+  transform-style:preserve-3d;
+  animation:float 4s ease-in-out infinite;
+}
+.float-card:nth-child(2){animation-delay:-1.5s;animation-duration:5s;}
+.float-card:nth-child(3){animation-delay:-3s;animation-duration:3.5s;}
+
+@keyframes float{
+  0%,100%{transform:translateY(0px) rotate(-0.5deg);}
+  50%{transform:translateY(-12px) rotate(0.5deg);}
+}
+
+.fc-main{
+  background:linear-gradient(135deg,rgba(255,69,0,0.9) 0%,rgba(180,30,0,0.95) 100%);
+  box-shadow:0 30px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,120,0,0.2),inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.fc-main::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.08),transparent);pointer-events:none;border-radius:16px 16px 0 0;}
+
+.fc-dark{
+  background:linear-gradient(135deg,rgba(28,8,0,0.97) 0%,rgba(15,5,0,0.98) 100%);
+  border:1px solid rgba(255,69,0,0.2);
+  box-shadow:0 20px 50px rgba(0,0,0,0.7),0 0 0 1px rgba(255,69,0,0.1),inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.fc-amber{
+  background:linear-gradient(135deg,rgba(255,120,0,0.85) 0%,rgba(200,60,0,0.9) 100%);
+  box-shadow:0 16px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,150,0,0.3),inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.fc-label{font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;opacity:0.6;font-weight:600;margin-bottom:10px;}
+.fc-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;line-height:1;color:#fff;}
+.fc-sub{font-size:0.78rem;color:rgba(255,255,255,0.6);margin-top:6px;line-height:1.5;}
+.fc-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+.fc-avatars{display:flex;}
+.fc-av{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);margin-left:-8px;font-size:0.6rem;display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;}
+.fc-av:first-child{margin-left:0;}
+.fc-av.a1{background:linear-gradient(135deg,#ff6a00,#ee0979);}
+.fc-av.a2{background:linear-gradient(135deg,#4facfe,#00f2fe);}
+.fc-av.a3{background:linear-gradient(135deg,#43e97b,#38f9d7);}
+.fc-badge{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:4px 10px;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+.fc-badge.get{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);}
+.fc-icon-big{font-size:2.8rem;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));}
+.fc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.4);display:inline-block;margin-right:6px;}
+
+/* ═══ MARQUEE ═══ */
+.marquee-wrap{overflow:hidden;padding:0;border-top:1px solid rgba(255,69,0,0.2);border-bottom:1px solid rgba(255,69,0,0.2);background:linear-gradient(90deg,var(--red),var(--orange),var(--amber),var(--orange),var(--red));background-size:200% 100%;animation:gradShift 4s linear infinite;}
+@keyframes gradShift{0%{background-position:0% 0%;}100%{background-position:200% 0%;}}
+.marquee-track{display:flex;animation:marquee 16s linear infinite;white-space:nowrap;padding:13px 0;}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:0.14em;color:#fff;padding:0 28px;display:flex;align-items:center;gap:28px;}
+.m-dot{width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,0.3);}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ═══ SECTION BASE ═══ */
+section.pad{padding:100px 5vw;position:relative;z-index:1;}
+.s-label{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.s-label::before{content:'';width:22px;height:1px;background:linear-gradient(90deg,var(--orange),var(--amber));}
+.s-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6.5rem);line-height:0.9;letter-spacing:0.02em;margin-bottom:60px;}
+.s-title .out{-webkit-text-stroke:1px rgba(255,69,0,0.5);color:transparent;}
+.s-title .og{color:var(--orange);text-shadow:0 0 30px rgba(255,69,0,0.35);}
+
+/* ═══ SERVICES ═══ */
+#services{
+  background:var(--dark);
+  background-image:
+    radial-gradient(ellipse 70% 50% at 80% 50%, rgba(255,69,0,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 10% 80%, rgba(180,30,0,0.07) 0%, transparent 55%);
+}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.svc{
+  background:var(--dark);padding:44px 34px;
+  position:relative;overflow:hidden;transition:background 0.3s;
+}
+.svc::before{content:'';position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(180deg,rgba(255,69,0,0.04),transparent);pointer-events:none;}
+.svc:hover{background:#1e0a00;}
+.svc-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;margin-bottom:12px;background:linear-gradient(135deg,rgba(255,69,0,0.07),rgba(255,150,0,0.03));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;transition:all 0.3s;}
+.svc:hover .svc-num{background:linear-gradient(135deg,rgba(255,69,0,0.18),rgba(255,150,0,0.1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.svc-icon-wrap{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:20px;position:relative;}
+.svc-icon-wrap::before{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(135deg,rgba(255,69,0,0.15),rgba(255,150,0,0.05));border:1px solid rgba(255,69,0,0.2);}
+.svc h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.04em;margin-bottom:12px;}
+.svc p{font-size:0.87rem;color:var(--muted);line-height:1.75;}
+.svc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px;}
+.svc-tag{font-size:0.65rem;padding:4px 10px;border:1px solid var(--border);color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;border-radius:1px;}
+.svc-glow{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform 0.5s ease;}
+.svc:hover .svc-glow{transform:scaleX(1);}
+
+/* ═══ PROJECTS ═══ */
+#projects{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 60% 50% at 20% 30%, rgba(255,69,0,0.05) 0%, transparent 60%);
+}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;}
+.pc:nth-child(1){grid-column:span 7;}
+.pc:nth-child(2){grid-column:span 5;}
+.pc:nth-child(3){grid-column:span 5;}
+.pc:nth-child(4){grid-column:span 7;}
+
+.pc{
+  background:var(--card);
+  border:1px solid rgba(255,69,0,0.12);
+  border-radius:3px;padding:34px 30px;
+  position:relative;overflow:hidden;
+  transition:all 0.35s;
+  transform-style:preserve-3d;
+}
+/* Inner gradient sheen */
+.pc::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:100px;
+  background:linear-gradient(180deg,rgba(255,69,0,0.04) 0%,transparent 100%);
+  pointer-events:none;
+}
+.pc:hover{
+  border-color:rgba(255,100,0,0.4);
+  transform:translateY(-5px) perspective(800px) rotateX(1deg);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,69,0,0.2),
+    0 0 40px rgba(255,69,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.pc-shine{
+  position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,150,80,0.04),transparent);
+  transform:skewX(-20deg);transition:left 0.6s ease;
+  pointer-events:none;
+}
+.pc:hover .pc-shine{left:150%;}
+.pc-top-bar{
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--orange),var(--amber),transparent);
+  transform:scaleX(0);transform-origin:left;transition:transform 0.5s ease;
+}
+.pc:hover .pc-top-bar{transform:scaleX(1);}
+.pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.pc-ico{
+  width:54px;height:54px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;
+  background:linear-gradient(135deg,rgba(255,69,0,0.1),rgba(255,150,0,0.05));
+  border:1px solid rgba(255,69,0,0.18);
+  box-shadow:0 4px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.ps-live{background:rgba(0,210,90,0.1);color:#00d45a;border:1px solid rgba(0,210,90,0.25);font-size:0.62rem;padding:5px 10px;border-radius:2px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+.ps-wip{background:rgba(255,150,0,0.1);color:var(--amber);border:1px solid rgba(255,150,0,0.25);font-size:0.62rem;padding:5px 10px;border-radius:2px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+.pc h3{font-family:'Bebas Neue',sans-serif;font-size:1.65rem;letter-spacing:0.04em;line-height:1;margin-bottom:10px;color:var(--text);}
+.pc p{font-size:0.86rem;color:var(--muted);line-height:1.75;}
+.pc-stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;}
+.stk{font-size:0.62rem;padding:3px 9px;background:rgba(255,69,0,0.07);border:1px solid rgba(255,69,0,0.15);color:var(--orange2);letter-spacing:0.06em;text-transform:uppercase;border-radius:1px;}
+.pc-link{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-size:0.78rem;color:var(--orange);text-decoration:none;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;transition:gap 0.2s,opacity 0.2s;}
+.pc-link:hover{gap:12px;}
+.pc-watermark{position:absolute;bottom:-15px;right:-5px;font-family:'Bebas Neue',sans-serif;font-size:8rem;color:rgba(255,69,0,0.03);line-height:1;pointer-events:none;user-select:none;}
+
+/* ═══ ABOUT ═══ */
+#about{
+  position:relative;overflow:hidden;
+  padding:100px 5vw;
+  background:linear-gradient(135deg,#cc2000 0%,#ff4500 35%,#ff7a00 65%,#e03000 100%);
+}
+#about::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 70% at 80% 30%, rgba(255,200,0,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(150,0,0,0.3) 0%, transparent 55%);
+  pointer-events:none;
+}
+#about::after{
+  content:'';position:absolute;
+  top:-50%;right:-20%;width:80%;height:200%;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events:none;
+}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;position:relative;z-index:2;}
+.al .s-label{color:rgba(0,0,0,0.45);}
+.al .s-label::before{background:rgba(0,0,0,0.3);}
+.al .s-title{color:#fff;margin-bottom:28px;}
+.al .s-title .out{-webkit-text-stroke:2px rgba(255,255,255,0.3);color:transparent;}
+.al p{font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.7);margin-bottom:14px;}
+.al strong{color:#fff;font-weight:600;}
+.exp-list{margin-top:32px;}
+.ei{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid rgba(0,0,0,0.12);}
+.ei:last-child{border-bottom:none;}
+.ei-line{width:2px;border-radius:2px;background:linear-gradient(180deg,rgba(255,255,255,0.4),rgba(255,255,255,0.1));flex-shrink:0;}
+.ei-role{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.04em;color:#fff;}
+.ei-co{font-size:0.8rem;color:rgba(0,0,0,0.4);margin-top:2px;font-weight:500;}
+.ei-yr{font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:3px;}
+.ar{}
+.sk-sec{margin-bottom:28px;}
+.sk-lbl{font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.4);margin-bottom:10px;font-weight:700;}
+.sk-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.sk-c{
+  padding:8px 16px;border-radius:3px;
+  background:rgba(0,0,0,0.12);
+  border:1px solid rgba(0,0,0,0.08);
+  color:#fff;font-size:0.82rem;font-weight:500;
+  backdrop-filter:blur(4px);
+  box-shadow:0 2px 8px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.1);
+  transition:all 0.2s;
+}
+.sk-c:hover{background:rgba(0,0,0,0.22);transform:translateY(-1px);}
+.lang{padding:7px 14px;border-radius:3px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:0.78rem;font-weight:500;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15);}
+
+/* ═══ CTA ═══ */
+#cta{display:grid;grid-template-columns:1fr 1fr;min-height:65vh;padding:0;}
+.cta-l{
+  background:var(--dark);
+  background-image:radial-gradient(ellipse 60% 60% at 30% 50%, rgba(255,69,0,0.06) 0%, transparent 60%);
+  padding:80px 5vw;display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid var(--border);
+}
+.cta-l .s-label{margin-bottom:16px;}
+.cta-l h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,5.5rem);line-height:0.93;letter-spacing:0.02em;margin-bottom:22px;}
+.cta-l h2 span{
+  background:linear-gradient(135deg,var(--orange),var(--amber));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(255,100,0,0.3));
+}
+.cta-l p{font-size:0.94rem;color:var(--muted);line-height:1.8;max-width:360px;}
+.cta-r{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,#e03800 0%,#ff5500 40%,#ff8c00 80%,#e04000 100%);
+  display:flex;flex-direction:column;justify-content:center;padding:80px 5vw;gap:22px;
+}
+.cta-r::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,200,0,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 60% at 100% 100%, rgba(150,0,0,0.2) 0%, transparent 50%);
+  pointer-events:none;
+}
+.bg-word{
+  position:absolute;bottom:-40px;right:-20px;
+  font-family:'Bebas Neue',sans-serif;font-size:18rem;
+  color:rgba(0,0,0,0.08);line-height:1;
+  pointer-events:none;user-select:none;
+  text-shadow:0 0 60px rgba(0,0,0,0.1);
+}
+.ci{display:flex;flex-direction:column;gap:3px;position:relative;z-index:2;}
+.ci-lbl{font-size:0.62rem;color:rgba(0,0,0,0.4);letter-spacing:0.14em;text-transform:uppercase;font-weight:700;}
+.ci-val{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1rem,2vw,1.4rem);letter-spacing:0.06em;color:#fff;
+  text-decoration:none;transition:opacity 0.2s;
+  text-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+.ci-val:hover{opacity:0.7;}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;color:var(--orange);
+  padding:16px 28px;border-radius:2px;font-size:0.78rem;font-weight:800;
+  text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;
+  transition:all 0.25s;align-self:flex-start;margin-top:10px;
+  position:relative;z-index:2;
+  box-shadow:0 8px 30px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.cta-btn:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.35);}
+
+/* ═══ FOOTER ═══ */
+footer{
+  background:#060200;border-top:1px solid var(--border);
+  padding:22px 5vw;display:flex;align-items:center;justify-content:space-between;
+  font-size:0.73rem;color:var(--muted);
+}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--text);letter-spacing:0.1em;display:flex;align-items:center;gap:6px;}
+.f-badge{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;font-size:0.45rem;padding:2px 5px;border-radius:2px;font-family:'Barlow',sans-serif;font-weight:700;letter-spacing:0.1em;align-self:flex-start;margin-top:1px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .services-grid{grid-template-columns:1fr;}
+  .bento .pc{grid-column:span 12!important;}
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  #cta{grid-template-columns:1fr;}
+  nav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">HIGGS <span class="logo-badge">3.0</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#cta">Contact</a></li>
+  </ul>
+  <a href="mailto:viveksanal.higgs@gmail.com" class="nav-pill">Hire Me</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">AI Automation Engineer · Trnava, Slovakia</div>
+    <h1>
+      <span class="white">BUILD</span><br/>
+      <span class="outline">AGENTS</span><br/>
+      <span class="glow">THAT</span><br/>
+      <span class="white">WORK.</span>
+    </h1>
+    <p class="hero-sub">
+      I'm <strong>Vivek Sanaldath</strong> — Senior Engineer &amp; CTO with 8+ years shipping production systems. I build <strong>AI agents, agentic workflows &amp; automation</strong> that replace real manual work for real businesses.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-fire">See Projects</a>
+      <a href="https://github.com/VivekShiggs" target="_blank" class="btn-outline">GitHub ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n">8+</div><div class="stat-l">Years Exp</div></div>
+      <div><div class="stat-n">4</div><div class="stat-l">AI Products</div></div>
+      <div><div class="stat-n">3</div><div class="stat-l">Countries</div></div>
+    </div>
+  </div>
+
+  <!-- 3D Floating Cards Panel -->
+  <div class="hero-right">
+
+    <!-- Card 1 — Main orange hero card -->
+    <div class="float-card fc-main" style="transform:rotate(-2deg);">
+      <div class="fc-label">Most Recommended</div>
+      <div class="fc-title">AI AUTOMATION<br/>CONNECTS<br/>BUSINESS.</div>
+      <div class="fc-row">
+        <div class="fc-avatars">
+          <div class="fc-av a1">V</div>
+          <div class="fc-av a2">K</div>
+          <div class="fc-av a3">R</div>
+        </div>
+        <div class="fc-badge get">GET STARTED</div>
+      </div>
+    </div>
+
+    <!-- Card 2 — Dark tech card -->
+    <div class="float-card fc-dark" style="transform:rotate(1.5deg);margin-top:-8px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="fc-icon-big">🤖</div>
+        <div>
+          <div class="fc-label">Technology Connects People</div>
+          <div class="fc-title" style="font-size:1.3rem;">INNOVATION<br/>LINKS<br/>HUMANITY</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:6px;">
+        <span class="fc-dot"></span>
+        <span style="font-size:0.72rem;color:var(--muted);">Firebase Genkit · Gemini Flash · Vapi</span>
+      </div>
+      <a href="#projects" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;padding:7px 14px;border-radius:2px;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 4px 14px rgba(255,69,0,0.4);">LEARN MORE →</a>
+    </div>
+
+    <!-- Card 3 — Amber accent card -->
+    <div class="float-card fc-amber" style="transform:rotate(-1deg);margin-top:-6px;">
+      <div class="fc-label">Available for Projects</div>
+      <div class="fc-title" style="font-size:1.4rem;">TECH BRINGS<br/>PEOPLE<br/>TOGETHER.</div>
+      <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:0.72rem;color:rgba(255,255,255,0.65);">Trnava · Slovakia · Remote</span>
+        <span class="fc-badge" style="background:rgba(0,0,0,0.2);">OPEN</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">AI AGENTS <span class="m-dot"></span></span>
+    <span class="marquee-item">FIREBASE GENKIT <span class="m-dot"></span></span>
+    <span class="marquee-item">GEMINI FLASH <span class="m-dot"></span></span>
+    <span class="marquee-item">VOICE AI <span class="m-dot"></span></span>
+    <span class="marquee-item">SPRING BOOT <span class="m-dot"></span></span>
+    <span class="marquee-item">REACT <span class="m-dot"></span></span>
+    <span class="marquee-item">HIGGS 3.0 <span class="m-dot"></span></span>
+    <span class="marquee-item">AUTOMATION <span class="m-dot"></span></span>
+    <span class="marquee-item">AI AGENTS <span class="m-dot"></span></span>
+    <span class="marquee-item">FIREBASE GENKIT <span class="m-dot"></span></span>
+    <span class="marquee-item">GEMINI FLASH <span class="m-dot"></span></span>
+    <span class="marquee-item">VOICE AI <span class="m-dot"></span></span>
+    <span class="marquee-item">SPRING BOOT <span class="m-dot"></span></span>
+    <span class="marquee-item">REACT <span class="m-dot"></span></span>
+    <span class="marquee-item">HIGGS 3.0 <span class="m-dot"></span></span>
+    <span class="marquee-item">AUTOMATION <span class="m-dot"></span></span>
+  </div>
+</div>
+
+<!-- ── SERVICES ── -->
+<section id="services" class="pad">
+  <span class="s-label">What I Do</span>
+  <h2 class="s-title">SERVICES<br/><span class="out">OFFERED</span></h2>
+  <div class="services-grid">
+    <div class="svc">
+      <div class="svc-num">01</div>
+      <div class="svc-icon-wrap"><span>🤖</span></div>
+      <h3>AI Agents &amp; Workflows</h3>
+      <p>Custom conversational agents built with Genkit &amp; Gemini. Patient intake, lead qualification, scheduling, support triage — fully automated end to end.</p>
+      <div class="svc-tags"><span class="svc-tag">Genkit</span><span class="svc-tag">Gemini</span><span class="svc-tag">Tool Calling</span><span class="svc-tag">Firestore</span></div>
+      <div class="svc-glow"></div>
+    </div>
+    <div class="svc">
+      <div class="svc-num">02</div>
+      <div class="svc-icon-wrap"><span>📞</span></div>
+      <h3>Voice AI Calling</h3>
+      <p>Outbound AI phone agents via Vapi &amp; Bland AI. Automated reminders, confirmations, and follow-up calls that sound human — at any scale.</p>
+      <div class="svc-tags"><span class="svc-tag">Vapi</span><span class="svc-tag">Bland AI</span><span class="svc-tag">Webhooks</span><span class="svc-tag">TTS</span></div>
+      <div class="svc-glow"></div>
+    </div>
+    <div class="svc">
+      <div class="svc-num">03</div>
+      <div class="svc-icon-wrap"><span>⚡</span></div>
+      <h3>Backend Automation APIs</h3>
+      <p>Production-grade Cloud Functions, scheduled triggers, and REST APIs in Java/Spring Boot or Node.js — built to handle real load without breaking.</p>
+      <div class="svc-tags"><span class="svc-tag">Firebase</span><span class="svc-tag">Spring Boot</span><span class="svc-tag">Node.js</span><span class="svc-tag">REST</span></div>
+      <div class="svc-glow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects" class="pad">
+  <span class="s-label">GitHub Projects</span>
+  <h2 class="s-title">BUILT &amp;<br/><span class="og">SHIPPED</span></h2>
+  <div class="bento">
+
+    <div class="pc">
+      <div class="pc-top-bar"></div>
+      <div class="pc-shine"></div>
+      <div class="pc-head">
+        <div class="pc-ico">🏥</div>
+        <span class="ps-live">Live</span>
+      </div>
+      <h3>Medical Receptionist AI Agent</h3>
+      <p>Full-stack AI agent that converses with patients, collects intake data, checks real-time Firestore slot availability, and confirms appointments via Genkit tool calling. Includes a live doctor dashboard and scheduled Cloud Functions that fire automated reminder calls via Vapi.</p>
+      <div class="pc-stack"><span class="stk">Genkit</span><span class="stk">Gemini 2.0 Flash</span><span class="stk">React</span><span class="stk">Firestore</span><span class="stk">Cloud Functions</span><span class="stk">Tailwind</span><span class="stk">Vapi</span></div>
+      <a href="https://github.com/VivekShiggs/medical-receptionist-ai" target="_blank" class="pc-link">View Repository →</a>
+      <div class="pc-watermark">01</div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top-bar"></div>
+      <div class="pc-shine"></div>
+      <div class="pc-head">
+        <div class="pc-ico">💊</div>
+        <span class="ps-live">Live</span>
+      </div>
+      <h3>Aria Health</h3>
+      <p>AI-powered health assistant platform. Intelligent symptom triage, medication reminders, and patient communication workflows built for modern healthcare providers.</p>
+      <div class="pc-stack"><span class="stk">React</span><span class="stk">Node.js</span><span class="stk">Firebase</span><span class="stk">AI</span></div>
+      <a href="https://github.com/VivekShiggs/aria-health" target="_blank" class="pc-link">View Repository →</a>
+      <div class="pc-watermark">02</div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top-bar"></div>
+      <div class="pc-shine"></div>
+      <div class="pc-head">
+        <div class="pc-ico">🔗</div>
+        <span class="ps-wip">Building</span>
+      </div>
+      <h3>Nexus AI</h3>
+      <p>Multi-agent orchestration engine. LLM reasoning connected to real-world API actions — multi-step workflows with retry logic, observability, and human-in-the-loop controls.</p>
+      <div class="pc-stack"><span class="stk">Genkit</span><span class="stk">Gemini</span><span class="stk">Orchestration</span><span class="stk">PostgreSQL</span></div>
+      <a href="https://github.com/VivekShiggs/nexus-ai" target="_blank" class="pc-link">View Repository →</a>
+      <div class="pc-watermark">03</div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top-bar"></div>
+      <div class="pc-shine"></div>
+      <div class="pc-head">
+        <div class="pc-ico">🧹</div>
+        <span class="ps-live">Live</span>
+      </div>
+      <h3>Clean Drive</h3>
+      <p>Automated storage management platform. AI-assisted file deduplication, intelligent cleanup scheduling, and cloud storage cost optimization for teams drowning in data overhead. Integrates with Google Drive, Azure Blob, and AWS S3.</p>
+      <div class="pc-stack"><span class="stk">Spring Boot</span><span class="stk">Java</span><span class="stk">Azure Blob</span><span class="stk">React</span><span class="stk">PostgreSQL</span><span class="stk">Docker</span></div>
+      <a href="https://github.com/VivekShiggs/clean-drive" target="_blank" class="pc-link">View Repository →</a>
+      <div class="pc-watermark">04</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="about-grid">
+    <div class="al">
+      <span class="s-label">Background</span>
+      <h2 class="s-title">8 YEARS.<br/><span class="out">3 COUNTRIES.</span><br/>ONE FOCUS.</h2>
+      <p>I'm a <strong>Senior Full-Stack Engineer and CTO</strong> from Kerala, India — now based in Trnava, Slovakia. Production software shipped in India, Canada, and Europe.</p>
+      <p>My edge: <strong>architecture to deployed agent</strong>, solo. Backend, frontend, cloud, AI — one engagement, zero agency overhead.</p>
+      <div class="exp-list">
+        <div class="ei"><div class="ei-line"></div><div><div class="ei-role">CTO &amp; Senior Engineer — HIGGS Webnivation</div><div class="ei-co">Ernakulam, India</div><div class="ei-yr">March 2018 – Present</div></div></div>
+        <div class="ei"><div class="ei-line"></div><div><div class="ei-role">Senior Software Engineer — The Trident Academy</div><div class="ei-co">Toronto, Ontario, Canada</div><div class="ei-yr">May 2020 – Feb 2022</div></div></div>
+        <div class="ei"><div class="ei-line"></div><div><div class="ei-role">BCA — Amrita Vishwa Vidyapeetham</div><div class="ei-co">India</div><div class="ei-yr">2017 – 2020</div></div></div>
+      </div>
+    </div>
+    <div class="ar">
+      <div class="sk-sec"><div class="sk-lbl">AI &amp; Automation</div><div class="sk-chips"><span class="sk-c">Firebase Genkit</span><span class="sk-c">Gemini Flash</span><span class="sk-c">LLM Tool Calling</span><span class="sk-c">Vapi / Bland AI</span><span class="sk-c">Agentic Workflows</span></div></div>
+      <div class="sk-sec"><div class="sk-lbl">Backend</div><div class="sk-chips"><span class="sk-c">Java / Spring Boot</span><span class="sk-c">C# / .NET Core</span><span class="sk-c">Node.js</span><span class="sk-c">RESTful APIs</span><span class="sk-c">Microservices</span></div></div>
+      <div class="sk-sec"><div class="sk-lbl">Frontend &amp; Cloud</div><div class="sk-chips"><span class="sk-c">React</span><span class="sk-c">TypeScript</span><span class="sk-c">Tailwind CSS</span><span class="sk-c">Azure</span><span class="sk-c">Docker</span><span class="sk-c">PostgreSQL</span></div></div>
+      <div class="sk-sec"><div class="sk-lbl">Languages Spoken</div><div class="sk-chips"><span class="lang">🇬🇧 English</span><span class="lang">🇮🇳 Malayalam</span><span class="lang">🇮🇳 Hindi</span><span class="lang">🇮🇳 Tamil</span><span class="lang">🇸🇰 Slovak</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-l">
+    <span class="s-label">Start a Project</span>
+    <h2>LET'S BUILD<br/><span>SOMETHING</span><br/>REAL.</h2>
+    <p>Have a process that costs your team hours every week? I'll turn it into an AI agent. I take a small number of focused projects — let's talk scope.</p>
+  </div>
+  <div class="cta-r">
+    <div class="bg-word">GO</div>
+    <div class="ci"><span class="ci-lbl">Email</span><a href="mailto:viveksanal.higgs@gmail.com" class="ci-val">VIVEKSANAL.HIGGS@GMAIL.COM</a></div>
+    <div class="ci"><span class="ci-lbl">Phone</span><a href="tel:+421910701043" class="ci-val">+421 910 701 043</a></div>
+    <div class="ci"><span class="ci-lbl">GitHub</span><a href="https://github.com/VivekShiggs" target="_blank" class="ci-val">GITHUB / VIVEKSHINGGS</a></div>
+    <a href="mailto:viveksanal.higgs@gmail.com" class="cta-btn">START A PROJECT →</a>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <span class="f-logo">HIGGS <span class="f-badge">3.0</span></span>
+  <span>© 2025 Vivek Sanaldath · Trnava, Slovakia</span>
+  <span>Built with purpose. Deployed with precision.</span>
+</footer>
+
+<script>
+// Custom cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){rx+=(mx-rx)*0.13;ry+=(my-ry)*0.13;cur.style.left=mx+'px';cur.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.width='56px';ring.style.height='56px';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';ring.style.width='32px';ring.style.height='32px';});
+});
+
+// Subtle 3D tilt on project cards
+document.querySelectorAll('.pc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width-0.5)*10;
+    const y=((e.clientY-r.top)/r.height-0.5)*-8;
+    card.style.transform=`translateY(-5px) perspective(800px) rotateX(${y}deg) rotateY(${x}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+  });
+});
+
+// Reveal on scroll
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});
+},{threshold:0.1});
+document.querySelectorAll('.svc,.pc,.ei').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(30px)';
+  el.style.transition='opacity 0.6s ease, transform 0.6s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
